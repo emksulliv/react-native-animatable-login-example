@@ -1,14 +1,29 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Login from './src/components/Login/Login.js';
+import {StackNavigator} from 'react-navigation';
+import LoginScreen from './screens/LoginScreen'
+import {Font} from 'expo';
+
+// import Login from './src/components/Login/Login.js';
 
 export default class App extends React.Component {
+  componentDidMount() {
+    Font.loadAsync({
+      'font': require('./assets/fonts/font1.ttf'),
+    });
+  }
+
   render() {
     return (
-      <Login />
+      <AppStackNavigator />
+      // <Login />
     );
   }
 }
+
+const AppStackNavigator = StackNavigator({
+  LoginScreen: { screen: LoginScreen}
+})
 
 const styles = StyleSheet.create({
   container: {
