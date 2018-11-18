@@ -3,20 +3,53 @@ import { StyleSheet, Text, View,
     ImageBackground, TextInput, 
     TouchableOpacity, Image, 
     Animated, Dimensions, 
-    Keyboard, Platform} from 'react-native';
+    Keyboard, Platform, 
+    Button, } from 'react-native';
 import {StackNavigator} from 'react-navigation';
 import Wave from 'react-native-waveview';
 import {Icon} from 'native-base';
 import {Font} from 'expo';
+import * as Expo from 'expo';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height
 import * as Animatable from 'react-native-animatable'
 
 class LoginScreen extends React.Component {
 
+
     static navigationOptions = {
         header: null
     }
+
+    constructor(props) {
+        super(props)
+
+        this.state ={
+            placeholderTextUsername: 'Enter your Username',
+            placeholderTextPassword: 'Enter your Password',
+            signedIn: false,
+        }
+    }
+
+
+    signIn = async () => {
+        try {
+            const result = await Expo.Google.logInAsync({
+            //   androidClientId: YOUR_CLIENT_ID_HERE,
+              iosClientId: 450091873068-dnkjiim6usr1ej8gcrh9sdrbsvp1tm7m.apps.googleusercontent.com,
+              scopes: ['profile', 'email'],
+            });
+    
+            if (result.type === 'success') {
+              return result.accessToken;
+            } else {
+              return {cancelled: true};
+            }
+          } catch(e) {
+            return {error: true};
+          }
+        }
+        
 
     componentWillMount() {
         this.loginHeight = new Animated.Value(150)
@@ -35,6 +68,7 @@ class LoginScreen extends React.Component {
 
         this.keyboardHeight = new Animated.Value(0)
         this.forwardArrowOpacity = new Animated.Value(0)
+        this.passwordInputOpacity = new Animated.Value(0)
         this.borderBottomWidth = new Animated.Value(0)
     }
 
@@ -55,6 +89,11 @@ class LoginScreen extends React.Component {
             }),
 
             Animated.timing(this.forwardArrowOpacity, {
+                duration: duration,
+                toValue: 1
+            }),
+
+            Animated.timing(this.passwordInputOpacity, {
                 duration: duration,
                 toValue: 1
             }),
@@ -80,6 +119,11 @@ class LoginScreen extends React.Component {
                 toValue: 0
             }),
 
+            Animated.timing(this.passwordInputOpacity, {
+                duration: event.duration,
+                toValue: 0
+            }),
+
             Animated.timing(this.borderBottomWidth, {
                 duration: event.duration,
                 toValue: 0
@@ -88,6 +132,9 @@ class LoginScreen extends React.Component {
     }
 
     increaseHeightOfLogin = () => {
+
+        this.setState({placeholderTextUsername: 'Username'})
+        this.setState({placeholderTextPassword: 'Password'})
         Animated.timing(this.loginHeight, {
             toValue: SCREEN_HEIGHT,
             duration:500
@@ -104,6 +151,26 @@ class LoginScreen extends React.Component {
         }).start()
     }
 
+
+    async signInWithGoogleAsync() {
+        try {
+          const result = await Expo.Google.logInAsync({
+            //androidClientId: YOUR_CLIENT_ID_HERE,
+            behavior : 'web',
+            iosClientId: '450091873068-dnkjiim6usr1ej8gcrh9sdrbsvp1tm7m.apps.googleusercontent.com',
+            scopes: ['profile', 'email'],
+          });
+  
+          if (result.type === 'success') {
+            return result;
+          } else {
+            return {cancelled: true};
+          }
+        } catch(e) {
+          return {error: true};
+        }
+      }
+
   render() {
 
     const headerTextOpacity = this.loginHeight.interpolate({
@@ -119,6 +186,36 @@ class LoginScreen extends React.Component {
     const headerBackArrowOpacity= this.loginHeight.interpolate({
         inputRange:[150, SCREEN_HEIGHT],
         outputRange:[0,1]
+    })
+
+    const passwordInputOpacity = this.loginHeight.interpolate({
+        inputRange:[150, 300,SCREEN_HEIGHT],
+        outputRange:[0, 0, 1]
+    })
+
+    const titleTextLeft= this.loginHeight.interpolate({
+        inputRange:[150, SCREEN_HEIGHT],
+        outputRange:[100, 25]
+    })
+
+    const titleTextBottom= this.loginHeight.interpolate({
+        inputRange:[150, 400, SCREEN_HEIGHT],
+        outputRange:[0, 0, 100]
+    })
+
+    const titleTextOpacity= this.loginHeight.interpolate({
+        inputRange:[150, SCREEN_HEIGHT],
+        outputRange:[0,1]
+    })
+
+    const UsernameTitleLeft= this.loginHeight.interpolate({
+        inputRange:[150, SCREEN_HEIGHT],
+        outputRange:[100, 5]
+    })
+
+    const UsernameTitleBottom= this.loginHeight.interpolate({
+        inputRange:[150, 400, SCREEN_HEIGHT],
+        outputRange:[0, 0, 0]
     })
 
     return (
@@ -153,9 +250,10 @@ class LoginScreen extends React.Component {
                     justifyContent: 'center',
                     borderRadius: 15
                 }}>
-
-                <Icon name="md-arrow-forward" style={{color: 'white'}} />
-
+                <TouchableOpacity 
+                onPress={() => this.decreaseHeightOfLogin()}>
+                    <Icon name="md-arrow-forward" style={{color: 'white'}} />
+                </TouchableOpacity>
             </Animated.View>
 
             <ImageBackground
@@ -197,36 +295,93 @@ class LoginScreen extends React.Component {
                     </Animated.View>
                 
 
-                    <TouchableOpacity
-                        onPress = {()=> this.increaseHeightOfLogin()}
+                <TouchableOpacity
+                    onPress = {()=> this.increaseHeightOfLogin()}
                     >
-                        <View style={{
-                            marginTop: this.marginTop, //animated
-                            paddingHorizontal: 25,
-                            flexDirection: 'row',
+                    <Animated.View style={{
+                        marginTop: marginTop, //animated
+                        paddingHorizontal: 25,
+                        flexDirection: 'row',
                         }}>
-                            <Animated.View 
+                        <Animated.Text style = 
+                            {{fontSize: 24, color: 'gray', 
+                            position: 'absolute', 
+                            bottom:titleTextBottom, 
+                            left:titleTextLeft, 
+                            opacity:titleTextOpacity}}>
+                                Enter Login information
+                        </Animated.Text>
+
+                        <Animated.View 
                                 pointerEvents="none"
-                                style={{flexDirection: 'row', 
+                                style={{ flexDirection: "row",
                                 flex: 1,
                                 borderBottomWidth: this.borderBottomWidth //animated
                                 }}>
                                 
-                                <Text style={{
+                                <Animated.Text style={{
+                                    opacity: headerTextOpacity,
                                     fontSize:20,
                                     paddingHorizontal: 10
 
-                                }}>Sign-In</Text>
+                                }}>Sign-In</Animated.Text>
+
+                                <Animated.Text style = 
+                                    {{fontSize: 20, 
+                                    position: 'absolute', 
+                                    bottom:UsernameTitleBottom, 
+                                    left:UsernameTitleLeft, 
+                                    opacity:titleTextOpacity}}>
+                                        Username
+                                </Animated.Text>
 
                                 <TextInput 
                                     ref="textInput"
-                                    style={{flex:1, fontSize:20}}
-                                    placeholder="Enter UserName"
-                                    underlineColorAndriod="transparent"/>                               
-                            </Animated.View>
-                        </View>                        
-                    </TouchableOpacity>
-                </Animated.View>
+                                    style={{flex:1, fontSize:20, paddingLeft: 20}}
+                                    placeholder={this.state.placeholderTextUsername}
+                                    underlineColorAndroid="transparent"
+                                    onSubmitEditing={() => this.refs.textInput2.focus()}/>  
+
+                                
+                        </Animated.View>
+                    </Animated.View>                        
+                </TouchableOpacity>
+                
+
+                <TouchableOpacity
+                    onPress = {() => this.refs.textInput2.focus()}>
+                    
+                    <Animated.View style={{
+                        marginTop: marginTop, //animated
+                        paddingHorizontal: 25,
+                        flexDirection: 'row',
+                        }}>
+                        <Animated.View 
+                                pointerEvents="none"
+                                style={{flexDirection: "row", 
+                                flex: 1,
+                                opacity: passwordInputOpacity,
+                                borderBottomWidth: this.borderBottomWidth //animated
+                                }}>
+
+                                <Text style={{
+                                    fontSize:20,
+                                    paddingHorizontal: 10,
+                                    paddingTop: 5
+                                    }}>Password
+                                </Text>
+
+                                <TextInput 
+                                    ref="textInput2"
+                                    style={{flex:1, fontSize:20,}}
+                                    placeholder={this.state.placeholderTextPassword}
+                                    underlineColorAndroid="transparent"/>
+                            
+                        </Animated.View>
+                    </Animated.View>
+                </TouchableOpacity>
+
+            </Animated.View>
 
                 <View>
                     <View  style ={{
@@ -238,16 +393,14 @@ class LoginScreen extends React.Component {
                             borderTopWidth: 1,
                             paddingHorizontal: 25
                         }}>
+                                
+                            <Button color='#c7b3d6' 
+                                title="or connect using a social account" 
+                                onPress={async () => {
+                                    this.signInWithGoogleAsync().then(user => {
+                                        console.log(user)
+                                      })}} />
 
-                        <Text
-                            style={{
-                                color: '#c7b3d6', fontWeight:
-                                'bold'
-                        }}>
-
-                        or connect using a social account
-
-                        </Text>
                     </View>
                 </View>
 
@@ -256,6 +409,16 @@ class LoginScreen extends React.Component {
         </View>
     );
   }
+}
+
+const LoginPage = props => {
+    return (
+        <Button color='#c7b3d6' 
+        title="or connect using a social account" 
+        onPress={() => props.signIn()} 
+
+    />
+    )
 }
 
 export default LoginScreen;
