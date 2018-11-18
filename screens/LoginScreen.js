@@ -11,6 +11,9 @@ import {Icon} from 'native-base';
 import {Font} from 'expo';
 import * as Expo from 'expo';
 
+import {Actions} from 'react-native-router-flux';
+import Dashboard from './Dashboard';
+
 const SCREEN_HEIGHT = Dimensions.get('window').height
 import * as Animatable from 'react-native-animatable'
 
@@ -29,6 +32,10 @@ class LoginScreen extends React.Component {
             placeholderTextPassword: 'Enter your Password',
             signedIn: false,
         }
+    }
+
+    attemptLogin(){
+        Actions.dashboard()
     }
 
 
@@ -251,7 +258,7 @@ class LoginScreen extends React.Component {
                     borderRadius: 15
                 }}>
                 <TouchableOpacity 
-                onPress={() => this.decreaseHeightOfLogin()}>
+                    onPress={this.attemptLogin}>
                     <Icon name="md-arrow-forward" style={{color: 'white'}} />
                 </TouchableOpacity>
             </Animated.View>
@@ -340,6 +347,7 @@ class LoginScreen extends React.Component {
                                     style={{flex:1, fontSize:20, paddingLeft: 20}}
                                     placeholder={this.state.placeholderTextUsername}
                                     underlineColorAndroid="transparent"
+                                    autoCorrect={false}
                                     onSubmitEditing={() => this.refs.textInput2.focus()}/>  
 
                                 
@@ -375,6 +383,7 @@ class LoginScreen extends React.Component {
                                     ref="textInput2"
                                     style={{flex:1, fontSize:20,}}
                                     placeholder={this.state.placeholderTextPassword}
+                                    secureTextEntry
                                     underlineColorAndroid="transparent"/>
                             
                         </Animated.View>
@@ -409,16 +418,6 @@ class LoginScreen extends React.Component {
         </View>
     );
   }
-}
-
-const LoginPage = props => {
-    return (
-        <Button color='#c7b3d6' 
-        title="or connect using a social account" 
-        onPress={() => props.signIn()} 
-
-    />
-    )
 }
 
 export default LoginScreen;
