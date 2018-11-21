@@ -158,6 +158,27 @@ class LoginScreen extends React.Component {
         }).start()
     }
 
+    increaseHeightOfSignUp= () => {
+
+        this.setState({placeholderTextUsername: 'Create a Username'})
+        this.setState({placeholderTextPassword: 'Create a Password'})
+        Animated.timing(this.loginHeight, {
+            toValue: SCREEN_HEIGHT,
+            duration:500
+        }).start(()=>{
+            this.refs.textInput.focus()
+        })
+    }
+
+    decreaseHeightOfSignUp = () => {
+        Keyboard.dismiss()
+        Animated.timing(this.loginHeight, {
+            toValue:150,
+            duration:500
+        }).start()
+    }
+
+
 
     async signInWithGoogleAsync() {
         try {
@@ -316,7 +337,7 @@ class LoginScreen extends React.Component {
                             bottom:titleTextBottom, 
                             left:titleTextLeft, 
                             opacity:titleTextOpacity}}>
-                                Enter Login information
+                                Enter User Information
                         </Animated.Text>
 
                         <Animated.View 
@@ -354,7 +375,22 @@ class LoginScreen extends React.Component {
                         </Animated.View>
                     </Animated.View>                        
                 </TouchableOpacity>
-                
+
+                <TouchableOpacity
+                    onPress = {() => this.increaseHeightOfSignUp()}>
+
+                        <Animated.Text style={{
+                        opacity: headerTextOpacity,
+                        fontSize:17,
+                        paddingHorizontal: 10,
+                        paddingTop: 18,
+                        color: '#c7b3d6',
+                        paddingLeft: 35
+
+                        }}>New User? Sign Up</Animated.Text>
+
+                </TouchableOpacity>
+
 
                 <TouchableOpacity
                     onPress = {() => this.refs.textInput2.focus()}>
@@ -456,9 +492,10 @@ const styles = StyleSheet.create({
       overflow: 'hidden',
     },
     title: {
-      color: '#000000', 
-      justifyContent: 'center',
-      marginTop: 30,
+        fontFamily: 'font',
+        color: '#000000', 
+        justifyContent: 'center',
+        marginTop: 30,
 
     }
   });
