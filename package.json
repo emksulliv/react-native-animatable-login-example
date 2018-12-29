@@ -8,7 +8,7 @@
     "ios": "expo start --ios",
     "eject": "expo eject"
   },
-  "rnpm":{
+  "rnpm": {
     "assets": [
       "assets/fonts"
     ]

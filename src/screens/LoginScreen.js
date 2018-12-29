@@ -4,22 +4,18 @@ import { StyleSheet, Text, View,
     TouchableOpacity, Image, 
     Animated, Dimensions, 
     Keyboard, Platform, 
-    Button, } from 'react-native';
+    Button, AsyncStorage, Alert } from 'react-native';
 import {StackNavigator} from 'react-navigation';
 import Wave from 'react-native-waveview';
 import {Icon} from 'native-base';
 import {Font} from 'expo';
 import * as Expo from 'expo';
 
-import {Actions} from 'react-native-router-flux';
-import Dashboard from './Dashboard';
-
 const SCREEN_HEIGHT = Dimensions.get('window').height
 import * as Animatable from 'react-native-animatable'
 
-class LoginScreen extends React.Component {
-
-
+class LoginScreen extends Component {
+    
     static navigationOptions = {
         header: null
     }
@@ -34,8 +30,20 @@ class LoginScreen extends React.Component {
         }
     }
 
+    state={username:"", password: ""}
+
     attemptLogin(){
-        Actions.dashboard()
+        
+        const { username, password } = this.state
+        console.warn(username, password)
+        if(username == 'Admin' && password == 'admin') {
+            this.props.navigation.navigate('dashboard')
+        } else {
+            // console.warn('Login is wrong')
+            Alert.alert('Error', 'Username or Password is incorrect', [{
+                text: 'Okay'
+            }])
+        }
     }
 
 
@@ -279,7 +287,7 @@ class LoginScreen extends React.Component {
                     borderRadius: 15
                 }}>
                 <TouchableOpacity 
-                    onPress={this.attemptLogin}>
+                    onPress={_ => this.attemptLogin()}>
                     <Icon name="md-arrow-forward" style={{color: 'white'}} />
                 </TouchableOpacity>
             </Animated.View>
@@ -369,6 +377,7 @@ class LoginScreen extends React.Component {
                                     placeholder={this.state.placeholderTextUsername}
                                     underlineColorAndroid="transparent"
                                     autoCorrect={false}
+                                    onChangeText={text => this.setState({ username : text })}
                                     onSubmitEditing={() => this.refs.textInput2.focus()}/>  
 
                                 
@@ -420,6 +429,7 @@ class LoginScreen extends React.Component {
                                     style={{flex:1, fontSize:20,}}
                                     placeholder={this.state.placeholderTextPassword}
                                     secureTextEntry
+                                    onChangeText={text => this.setState({ password: text})}
                                     underlineColorAndroid="transparent"/>
                             
                         </Animated.View>
@@ -455,7 +465,33 @@ class LoginScreen extends React.Component {
     );
   }
 }
+const mapStateToProps = (state, ownProps) => {
+    return {}
+}
 
+const actionCreator = (action, payload = null) => ({ action, payload })
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        authSuccess: (token) => {
+            AsyncStorage.multiSet([['token', token], ['authenticated', '1']])
+            dispatch(actionCreator('LOGIN_SUCCESS'))
+        }
+    }
+}
+
+export const authStateReducer = (state={app_stated:false, authenticated:false},{type,payload})=>{
+    switch(type){
+        case 'LOGIN_SUCCESS':
+        return {...state,authenticated:true}
+        case 'LOGGOUT':
+        return {...state,authenticated:false}
+        case 'APP_LOADED':
+        return {...state,app_started:true}
+        default:
+        return state
+    }
+}
 export default LoginScreen;
 
 const styles = StyleSheet.create({

@@ -1,21 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {StackNavigator} from 'react-navigation';
-import LoginScreen from './screens/LoginScreen'
+import {StackNavigator, createStackNavigator} from 'react-navigation';
+import LoginScreen from './src/screens/LoginScreen'
+import Dashboard from './src/screens/Dashboard'
 import {Font} from 'expo';
 
 
-
-// import Login from './src/components/Login/Login.js';
-
 export default class App extends React.Component {
+
   state ={
     isFontLoaded: false,
   }
 
   componentDidMount() {
     Font.loadAsync({
-      'font': require('./assets/fonts/font1.ttf'),
+      'font': require('./src/assets/fonts/font1.ttf'),
     }).then(() => {
       this.setState({
         isFontLoaded: true
@@ -24,14 +23,19 @@ export default class App extends React.Component {
   }
 
   render() {
-    return (
-       <AppStackNavigator />
-    );
+    if(this.state.isFontLoaded)
+      return <AppStackNavigator />
+    else 
+      return null;
+    
+
+    
   }
 }
 
 const AppStackNavigator = StackNavigator({
-  LoginScreen: { screen: LoginScreen}
+  loginScreen: LoginScreen,
+  dashboard : Dashboard
 })
 
 const styles = StyleSheet.create({
