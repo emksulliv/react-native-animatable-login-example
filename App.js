@@ -14,7 +14,7 @@ export default class App extends React.Component {
 
   componentDidMount() {
     Font.loadAsync({
-      'font': require('./src/assets/fonts/font1.ttf'),
+      'font': require('./src/assets/fonts/font2.ttf'),
     }).then(() => {
       this.setState({
         isFontLoaded: true
