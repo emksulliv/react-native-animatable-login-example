@@ -13,7 +13,9 @@ class Dashboard extends Component {
 
         this.state = {
             data: [],
-            refreshing: false
+            refreshing: false, 
+            waterLevelData: [],
+            airTempData: [],
         };
     }
 
@@ -22,20 +24,22 @@ class Dashboard extends Component {
     }
 
     fetchData = async () => {
-        //fetch apis
+        //fetch api for ALL water level stations
         const allTidePredStationsResponse = await fetch("https://tidesandcurrents.noaa.gov/mdapi/v1.0/webapi/stations.json?type=tidepredictions");
-        const waterLevelNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station=8575512&date=latest&units=english&datum=MLLW&product=water_level&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
-        const airTempNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station=8575512&date=latest&units=english&datum=MLLW&product=air_temperature&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
-        
         //convert to json
         const json = await allTidePredStationsResponse.json();
-        const jsonLevel = await responseLevelNow.json();
-        const airTempJson = await airTempNowResponse.json();
-
         //weed out the other state water level stations
         let filteredByMaryland = json.stations.filter(item => item.state === 'MD')
-        this.setState({ data: filteredByMaryland, refreshing: false });
+        
+        //fetch  api's for everything else
+        //TODO change ID to the id of json items (item.id)
+        const waterLevelNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station="+ ID + "&date=latest&units=english&datum=MLLW&product=water_level&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
+        const airTempNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station="+ ID + "&date=latest&units=english&datum=MLLW&product=air_temperature&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
+        //convert THOSE to jsons
+        const waterLevelJson = await waterLevelNowResponse.json();
+        const airTempJson = await airTempNowResponse.json();
 
+        this.setState({ data: filteredByMaryland, waterLevelData: waterLevelJson.data, airTempData: airTempJson ,refreshing: false });
         this.arrayholder = json.stations;
     };
 
