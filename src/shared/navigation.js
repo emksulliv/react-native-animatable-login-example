@@ -12,9 +12,10 @@ export default AppNavigation = (authenticated)=>createStackNavigator({
     dashboard:{
         getScreen:()=>Dashboard,
         navigationOptions:{
-            title:'Dashboard'
+            title:'Dashboard', 
         }
     }
 }, {
-    initialRouteName:authenticated?'dashboard' : 'login'
+    initialRouteName:authenticated?'dashboard' : 'login',
+    headerMode : null
 })
