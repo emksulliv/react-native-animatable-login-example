@@ -1,5 +1,7 @@
 # Wave-app
-A simple tide forecast app built with React Native
+A simple tide forecast app built with React Native. 
+
+This app was created to enter into the [Masergy](https://www.masergy.com/stem-scholarship/) STEM scholarship oppurtunity for the Spring of 2019. I wanted to create a stylish and useful tide forecast app that implemented tasteful UI components and showcased the hard work I achieved.
 
 # Development Stack
 - I used [Visual Studio Code](https://code.visualstudio.com/) on OSX to create this app
