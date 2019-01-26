@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
-import { FlatList, View, Text, StyleSheet, SafeAreaView } from 'react-native'
+import { FlatList, View, Text, 
+    StyleSheet, SafeAreaView, StatusBar, 
+    RefreshControl, TouchableOpacity } from 'react-native'
 import { List, ListItem, SearchBar } from 'react-native-elements'
+import {Icon} from 'native-base';
 
 class Dashboard extends Component {
 
@@ -14,8 +17,8 @@ class Dashboard extends Component {
         this.state = {
             data: [],
             refreshing: false, 
-            waterLevelData: [],
-            airTempData: [],
+            //waterLevelData: [],
+            //airTempData: [],
         };
     }
 
@@ -30,17 +33,21 @@ class Dashboard extends Component {
         const json = await allTidePredStationsResponse.json();
         //weed out the other state water level stations
         let filteredByMaryland = json.stations.filter(item => item.state === 'MD')
-        
-        //fetch  api's for everything else
-        //TODO change ID to the id of json items (item.id)
-        const waterLevelNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station="+ ID + "&date=latest&units=english&datum=MLLW&product=water_level&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
-        const airTempNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station="+ ID + "&date=latest&units=english&datum=MLLW&product=air_temperature&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
-        //convert THOSE to jsons
-        const waterLevelJson = await waterLevelNowResponse.json();
-        const airTempJson = await airTempNowResponse.json();
 
-        this.setState({ data: filteredByMaryland, waterLevelData: waterLevelJson.data, airTempData: airTempJson ,refreshing: false });
+        //array holder (for search function)
         this.arrayholder = json.stations;
+        
+        // //fetch  api's for everything else
+        // //TODO change ID to the id of json items (item.id)
+        // const waterLevelNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station="+ ID + "&date=latest&units=english&datum=MLLW&product=water_level&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
+        // const airTempNowResponse = await fetch("https://tidesandcurrents.noaa.gov/api/datagetter?&station="+ ID + "&date=latest&units=english&datum=MLLW&product=air_temperature&time_zone=LST_LDT&format=json&application=NOS.COOPS.TAC.COOPSMAP&interval=");
+        // //convert THOSE to jsons
+        // const waterLevelJson = await waterLevelNowResponse.json();
+        // const airTempJson = await airTempNowResponse.json();
+
+        this.setState({ data: filteredByMaryland, 
+            //waterLevelData: waterLevelJson.data, airTempData: airTempJson 
+            refreshing: false });
     };
 
     handleRefresh = () => {
@@ -62,8 +69,6 @@ class Dashboard extends Component {
                     backgroundColor: '#CED0CE',
                     marginLeft: '14%',
                     fontSize: 40,
-                    
-                    marginBottom: 30
                 }}
             />
         );
@@ -72,10 +77,13 @@ class Dashboard extends Component {
 
     renderHeader = () => {
         return (
-            <SafeAreaView style={{ flex: 1}}>
+            <SafeAreaView style={{ 
+                            flex: 1, 
+                            backgroundColor: '#373d47'
+                            }}>
                 <SearchBar
                     placeholder="Type Here..."
-                    lightTheme
+                    darkTheme
                     round
                     onChangeText={text => this.searchFilterFunction(text)}
                     autoCorrect={false}
@@ -99,15 +107,15 @@ class Dashboard extends Component {
 
     render() {
         return (
-            //new container here?
             <View style={{ flex: 1 }}>
+            <StatusBar barStyle="light-content"/> 
                 {/* <List containerStyle={{ borderTopWidth: 0, borderBottomWidth: 0 }}> */}
                     <FlatList
                         data={this.state.data}
                         renderItem={({ item }) => (
                             <ListItem
                                 title={item.name}
-                                containerStyle={{ borderBottomWidth: 0, marginTop: 30 }}
+                                containerStyle={{ borderBottomWidth: 0, marginTop: 30, marginBottom: 30}}
                             />
                             // <Text>
                             //     {item.name}
@@ -116,10 +124,17 @@ class Dashboard extends Component {
                         keyExtractor={item => item.name}
                         ItemSeparatorComponent={this.renderSeparator}
                         ListHeaderComponent={this.renderHeader}
-                        refreshing={this.state.refreshing}
-                        onRefresh={this.handleRefresh}
+                        // refreshing={this.state.refreshing}
+                        // onRefresh={this.handleRefresh}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={this.state.refreshing}
+                                onRefresh={this.handleRefresh}
+                                backgroundColor="#4d5460"
+                                tintColor="#e3e9f2"
+                            />
+                        }      
                     />
-                {/* </List> */}
             </View>
         )
     }
