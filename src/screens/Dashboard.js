@@ -29,9 +29,7 @@ class Dashboard extends Component {
     }
 
     getDetails = async (id, index)=> {
-        // console.log(id, index)
-        // console.log(this.waterLevelUrlById(id))
-        // console.log(this.airTempUrlById(id))
+   
         let wl = await(await fetch(this.waterLevelUrlById(id))).json()
         let at = await(await fetch(this.airTempUrlById(id))).json()
         console.log(wl, at)
