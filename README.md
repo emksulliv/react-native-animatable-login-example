@@ -13,7 +13,7 @@ This app was created to enter into the [Masergy](https://www.masergy.com/stem-sc
 - Breakdown of their API data usage can be found [here](https://tidesandcurrents.noaa.gov/api/#units)
 - No API key is needed to run this app
 
-# HomePage TODO
+# Wave Page TODO
 - [ ] Scrollclock with selection changing waveView to that time (height value should change)
 - [x] Current Height
 - [x] Location name
